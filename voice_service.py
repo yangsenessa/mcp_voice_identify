@@ -1,6 +1,7 @@
 import os
 import time
 import base64
+import re
 from typing import Dict, Any
 from dotenv import load_dotenv
 import requests
@@ -18,6 +19,45 @@ class VoiceService:
         self.version = "1.0.0"
         self.author = "AIO-2030"
         self.github = "https://github.com/AIO-2030/mcp_voice_identify"
+
+    def parse_label_result(self, label_result: str) -> Dict[str, str]:
+        """Parse label result into structured format"""
+        # Extract values between <| and |>
+        pattern = r'<\|(.*?)\|>'
+        matches = re.findall(pattern, label_result)
+        
+        # Initialize result dictionary
+        result = {
+            "lan": "unknown",
+            "emo": "unknown",
+            "type": "unknown",
+            "speaker": "unknown",
+            "text": ""
+        }
+        
+        # Map labels to keys
+        label_mapping = {
+            "en": "lan",
+            "EMO_UNKNOWN": "emo",
+            "Speech": "type",
+            "woitn": "speaker"
+        }
+        
+        # Process matches
+        for match in matches:
+            if match in label_mapping:
+                result[label_mapping[match]] = match.lower()
+            elif match not in ["", " "]:
+                result["text"] = match
+        
+        return result
+
+    def restructure_response(self, response: Dict[str, Any]) -> Dict[str, Any]:
+        """Restructure API response with parsed label result"""
+        if "label_result" in response:
+            parsed_label = self.parse_label_result(response["label_result"])
+            response["label_result"] = parsed_label
+        return response
 
     def get_help_info(self, include_mcp: bool = True) -> Dict[str, Any]:
         """Return help information"""
@@ -156,13 +196,16 @@ class VoiceService:
                     'Authorization': f'Bearer {API_KEY}',
                     'accept': 'application/json'
                 }
+                print(f"API_KEY: {API_KEY}")
+                print(f"API_URL: {API_URL}")
                 response = requests.post(
                     API_URL,
                     headers=headers,
                     files=files
                 )
                 response.raise_for_status()
-                return response.json()
+                result = response.json()
+                return self.restructure_response(result)
         except Exception as e:
             return {"error": str(e)}
 
@@ -188,7 +231,8 @@ class VoiceService:
                 files=files
             )
             response.raise_for_status()
-            return response.json()
+            result = response.json()
+            return self.restructure_response(result)
         except Exception as e:
             return {"error": str(e)}
 
@@ -201,7 +245,8 @@ class VoiceService:
                 json={"text": text}
             )
             response.raise_for_status()
-            return response.json()
+            result = response.json()
+            return self.restructure_response(result)
         except Exception as e:
             return {"error": str(e)}
 

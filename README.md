@@ -8,6 +8,7 @@ This service provides voice recognition and text extraction capabilities through
 - Voice recognition from base64 encoded data
 - Text extraction
 - Support for both stdio and MCP modes
+- Structured voice recognition results
 
 ## Project Structure
 
@@ -72,6 +73,63 @@ python mcp_server.py
 ```bash
 ./dist/voice_mcp
 ```
+
+## Voice Recognition Results
+
+The service provides structured voice recognition results. Here's an example of the response format:
+
+### Original API Response
+```json
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "message": "input processed successfully",
+        "results": "test test test",
+        "label_result": "<|en|><|EMO_UNKNOWN|><|Speech|><|woitn|>test test test"
+    },
+    "id": 1
+}
+```
+
+### Restructured Response
+```json
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "message": "input processed successfully",
+        "results": "test test test",
+        "label_result": {
+            "lan": "en",
+            "emo": "unknown",
+            "type": "speech",
+            "speaker": "woitn",
+            "text": "test test test"
+        }
+    },
+    "id": 1
+}
+```
+
+### Label Result Fields
+
+The `label_result` field contains the following structured information:
+
+| Field    | Description                          | Example Value |
+|----------|--------------------------------------|---------------|
+| lan      | Language code                        | "en"          |
+| emo      | Emotion state                        | "unknown"     |
+| type     | Audio type                          | "speech"      |
+| speaker  | Speaker identifier                   | "woitn"       |
+| text     | Recognized text content              | "test test test" |
+
+### Special Labels
+
+The service recognizes and processes the following special labels in the original response:
+
+- `<|en|>` - Language code
+- `<|EMO_UNKNOWN|>` - Emotion state
+- `<|Speech|>` - Audio type
+- `<|woitn|>` - Speaker identifier
 
 ## Building Executables
 
