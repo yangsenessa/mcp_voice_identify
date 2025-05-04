@@ -2,23 +2,22 @@ import os
 import time
 import base64
 import re
-from typing import Dict, Any
-from dotenv import load_dotenv
+from typing import Dict, Any, Optional
 import requests
 
-# Load environment variables
-load_dotenv()
-
-# Get API configuration
-API_URL = os.getenv("API_URL")
-API_KEY = os.getenv("API_KEY")
-
 class VoiceService:
-    def __init__(self):
+    def __init__(self, api_url: Optional[str] = None, api_key: Optional[str] = None):
         self.name = "Voice Recognition Service"
         self.version = "1.0.0"
         self.author = "AIO-2030"
         self.github = "https://github.com/AIO-2030/mcp_voice_identify"
+        
+        # Initialize API configuration
+        self.api_url = api_url or os.getenv("API_URL")
+        self.api_key = api_key or os.getenv("API_KEY")
+        
+        if not self.api_url or not self.api_key:
+            raise ValueError("API_URL and API_KEY must be provided either through constructor or environment variables")
 
     def parse_label_result(self, label_result: str) -> Dict[str, str]:
         """Parse label result into structured format"""
@@ -193,13 +192,11 @@ class VoiceService:
             with open(file_path, "rb") as f:
                 files = {'file': f}
                 headers = {
-                    'Authorization': f'Bearer {API_KEY}',
+                    'Authorization': f'Bearer {self.api_key}',
                     'accept': 'application/json'
                 }
-                print(f"API_KEY: {API_KEY}")
-                print(f"API_URL: {API_URL}")
                 response = requests.post(
-                    API_URL,
+                    self.api_url,
                     headers=headers,
                     files=files
                 )
@@ -220,13 +217,11 @@ class VoiceService:
             
             files = {'file': file_obj}
             headers = {
-                'Authorization': f'Bearer {API_KEY}',
+                'Authorization': f'Bearer {self.api_key}',
                 'accept': 'application/json'
             }
-            print(f"API_KEY: {API_KEY}")
-            print(f"API_URL: {API_URL}")
             response = requests.post(
-                API_URL,
+                self.api_url,
                 headers=headers,
                 files=files
             )
@@ -240,8 +235,8 @@ class VoiceService:
         """Extract text"""
         try:
             response = requests.post(
-                API_URL,
-                headers={"Authorization": f"Bearer {API_KEY}"},
+                self.api_url,
+                headers={"Authorization": f"Bearer {self.api_key}"},
                 json={"text": text}
             )
             response.raise_for_status()

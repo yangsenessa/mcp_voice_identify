@@ -3,7 +3,10 @@ import sys
 from voice_service import VoiceService
 
 def main():
-    service = VoiceService()
+    service = VoiceService(
+        api_url="https://openapi.emchub.ai/emchub/api/openapi/task/executeTaskByUser/edgematrix:yiminger/extract_text",
+        api_key="833_txLiSbJibu160317539183112192"
+    )
     
     # Read input from stdin
     for line in sys.stdin:

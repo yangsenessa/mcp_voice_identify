@@ -1,4 +1,5 @@
 import asyncio
+import time
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.server.fastmcp.tools import Tool
@@ -6,7 +7,12 @@ from voice_service import VoiceService
 
 # Create MCP server instance
 mcp = Server("Voice Recognition MCP")
-service = VoiceService()
+
+# Initialize VoiceService with explicit values
+service = VoiceService(
+    api_url="https://openapi.emchub.ai/emchub/api/openapi/task/executeTaskByUser/edgematrix:yiminger/extract_text",  # Replace with your actual API URL
+    api_key="833_txLiSbJibu160317539183112192"  # Replace with your actual API key
+)
 
 # Define tools
 @Tool.from_function

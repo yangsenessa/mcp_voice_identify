@@ -13,8 +13,8 @@ fi
 BASE64_DATA=$(base64 -w 0 "$TEST_FILE")
 
 # Test with Python directly
-echo "Testing voice identification with base64 data:"
-echo '{"jsonrpc": "2.0", "method": "identify_voice_base64", "params": {"base64_data": "'$BASE64_DATA'"}, "id": 1}' | python stdio_server.py
+#echo "Testing voice identification with base64 data:"
+#echo '{"jsonrpc": "2.0", "method": "identify_voice_base64", "params": {"base64_data": "'$BASE64_DATA'"}, "id": 1}' | python stdio_server.py
 
 # Test with executable (if exists)
 if [ -f "dist/voice_stdio" ]; then
