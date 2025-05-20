@@ -197,7 +197,7 @@ class VoiceService:
         """Return help information in JSON-RPC 2.0 format"""
         return {
             "jsonrpc": "2.0",
-            "result": self.get_help_info(include_mcp=False),
+            "output": self.get_help_info(include_mcp=False),
             "id": int(time.time() * 1000)
         }
 
