@@ -20,7 +20,7 @@ async def help() -> dict:
     """Return help information in JSON-RPC 2.0 format"""
     return {
         "jsonrpc": "2.0",
-        "result": service.get_help_info(include_mcp=True),
+        "output": service.get_help_info(include_mcp=True),
         "id": int(time.time() * 1000)
     }
 
