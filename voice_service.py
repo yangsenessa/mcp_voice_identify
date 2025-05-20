@@ -55,7 +55,22 @@ class VoiceService:
         """Restructure API response with parsed label result"""
         if "label_result" in response:
             parsed_label = self.parse_label_result(response["label_result"])
-            response["label_result"] = parsed_label
+            return {
+                "jsonrpc": "2.0",
+                "output": {
+                    "type": "voice",
+                    "message": response.get("message", "Voice processed successfully"),
+                    "text": response.get("results", ""),
+                    "metadata": {
+                        "language": parsed_label["lan"],
+                        "emotion": parsed_label["emo"],
+                        "audio_type": parsed_label["type"],
+                        "speaker": parsed_label["speaker"],
+                        "raw_text": parsed_label["text"]
+                    }
+                },
+                "id": response.get("id", int(time.time() * 1000))
+            }
         return response
 
     def get_help_info(self, include_mcp: bool = True) -> Dict[str, Any]:
@@ -204,7 +219,15 @@ class VoiceService:
                 result = response.json()
                 return self.restructure_response(result)
         except Exception as e:
-            return {"error": str(e)}
+            return {
+                "jsonrpc": "2.0",
+                "output": {
+                    "type": "error",
+                    "message": str(e),
+                    "error_code": response.status_code if 'response' in locals() else 500
+                },
+                "id": int(time.time() * 1000)
+            }
 
     def identify_voice_base64(self, base64_data: str) -> Dict[str, Any]:
         """Identify voice from base64 encoded data"""
@@ -229,7 +252,15 @@ class VoiceService:
             result = response.json()
             return self.restructure_response(result)
         except Exception as e:
-            return {"error": str(e)}
+            return {
+                "jsonrpc": "2.0",
+                "output": {
+                    "type": "error",
+                    "message": str(e),
+                    "error_code": response.status_code if 'response' in locals() else 500
+                },
+                "id": int(time.time() * 1000)
+            }
 
     def extract_text(self, text: str) -> Dict[str, Any]:
         """Extract text"""
@@ -243,7 +274,15 @@ class VoiceService:
             result = response.json()
             return self.restructure_response(result)
         except Exception as e:
-            return {"error": str(e)}
+            return {
+                "jsonrpc": "2.0",
+                "output": {
+                    "type": "error",
+                    "message": str(e),
+                    "error_code": response.status_code if 'response' in locals() else 500
+                },
+                "id": int(time.time() * 1000)
+            }
 
     def voice_recognition_prompt(self, file_path: str) -> str:
         """Create a voice recognition prompt template"""
