@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/yangsenessa-mcp-voice-identify-badge.png)](https://mseep.ai/app/yangsenessa-mcp-voice-identify)
+
 # Voice Recognition MCP Service
 
 This service provides voice recognition and text extraction capabilities through both stdio and MCP modes.
